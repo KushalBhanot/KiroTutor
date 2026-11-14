@@ -111,4 +111,3 @@ chatRoutes.get(
   }
 );
 
-export { chatRoutes };

@@ -1,12 +1,10 @@
 import {
   StartTranscriptionJobCommand,
   GetTranscriptionJobCommand,
-  TranscriptionJob,
+  MediaFormat,
 } from '@aws-sdk/client-transcribe';
 import { transcribeClient } from './aws-clients';
 import { TranscribeJobResult, TranscriptData } from '../models/types';
-import { v4 as uuidv4 } from 'uuid';
-import fetch from 'node-fetch';
 
 export class TranscribeService {
   /**
@@ -22,7 +20,7 @@ export class TranscribeService {
     const command = new StartTranscriptionJobCommand({
       TranscriptionJobName: jobName,
       LanguageCode: 'en-US',
-      MediaFormat: mediaFormat,
+      MediaFormat: mediaFormat as MediaFormat,
       Media: {
         MediaFileUri: s3Uri,
       },
@@ -35,7 +33,7 @@ export class TranscribeService {
     });
 
     try {
-      const response = await transcribeClient.send(command);
+      await transcribeClient.send(command);
       
       return {
         jobName,

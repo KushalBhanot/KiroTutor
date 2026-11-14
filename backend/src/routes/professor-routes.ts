@@ -260,4 +260,3 @@ function groupQuestionsIntoConfusionPoints(
   return result;
 }
 
-export { professorRoutes };

@@ -266,4 +266,3 @@ async function generateStudyKitAsync(
   }
 }
 
-export { lectureRoutes };

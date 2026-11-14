@@ -27,8 +27,10 @@ function demoUser(email: string, name?: string, role?: 'student' | 'professor'):
   };
 }
 
+// Backend down, or up without Postgres/AWS configured: fall back to demo mode
 function isNetworkError(error: unknown): boolean {
-  return typeof error === 'object' && error !== null && !('response' in error && (error as { response?: unknown }).response);
+  const status = (error as { response?: { status?: number } } | null)?.response?.status;
+  return status === undefined || status >= 500;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

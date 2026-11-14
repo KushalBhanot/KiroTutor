@@ -104,10 +104,10 @@ export default function ConfusionMapPage() {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
                 dataKey="name" 
-                interval={5}
+                interval={0}
                 style={{ fontSize: '12px' }}
               />
-              <YAxis label={{ value: 'Questions', angle: -90, position: 'insideLeft' }} />
+              <YAxis allowDecimals={false} label={{ value: 'Questions', angle: -90, position: 'insideLeft' }} />
               <Tooltip 
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {

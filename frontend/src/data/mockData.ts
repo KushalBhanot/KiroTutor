@@ -343,7 +343,7 @@ export const mockConfusionMap: ConfusionMapData = {
   lecture_id: 'lecture-001',
   lecture_title: mockLecture.title,
   duration_seconds: 2700,
-  heatmap: generateHeatmapBuckets(mockQuestions, 2700, 30),
+  heatmap: generateHeatmapBuckets(mockQuestions, 2700, 180),
   total_questions: mockQuestions.length,
 };
 

@@ -1,3 +1,4 @@
+import toast from 'react-hot-toast';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -7,6 +8,35 @@ interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp?: number;
+}
+
+const STOP_WORDS = new Set([
+  'a', 'an', 'the', 'is', 'are', 'was', 'were', 'of', 'in', 'on', 'to', 'for', 'and', 'or',
+  'what', 'why', 'how', 'when', 'which', 'who', 'does', 'do', 'did', 'can', 'could', 'would',
+  'i', 'me', 'my', 'you', 'it', 'this', 'that', 'with', 'about', 'be', 'by', 'at', 'as', 'we',
+  'explain', 'please', 'mean', 'professor', 'lecture', 'say', 'said',
+]);
+
+const tokenize = (text: string) =>
+  text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .map((w) => w.replace(/s$/, ''))
+    .filter((w) => w.length > 1 && !STOP_WORDS.has(w));
+
+function findBestMatch(message: string) {
+  const words = new Set(tokenize(message));
+  let best: (typeof mockQuestions)[number] | undefined;
+  let bestScore = 0;
+  for (const q of mockQuestions) {
+    const score = tokenize(q.question_text).filter((w) => words.has(w)).length;
+    if (score > bestScore) {
+      best = q;
+      bestScore = score;
+    }
+  }
+  return best;
 }
 
 export default function ChatPage() {
@@ -37,13 +67,8 @@ export default function ChatPage() {
 
     // Simulate AI response with mock data
     setTimeout(() => {
-      // Find a relevant mock question/answer
-      const relevantQ = mockQuestions.find(q => 
-        q.question_text.toLowerCase().includes(userMessage.toLowerCase().split(' ')[0]) ||
-        userMessage.toLowerCase().includes('complexity') && q.question_text.toLowerCase().includes('complexity') ||
-        userMessage.toLowerCase().includes('heap') && q.question_text.toLowerCase().includes('heap') ||
-        userMessage.toLowerCase().includes('merge') && q.question_text.toLowerCase().includes('merge')
-      );
+      // Pick the mock Q&A that shares the most meaningful words with the question
+      const relevantQ = findBestMatch(userMessage);
 
       let response = '';
       let timestamp = 0;
@@ -133,7 +158,7 @@ export default function ChatPage() {
                   <div className="whitespace-pre-wrap">{msg.content}</div>
                   {msg.timestamp !== undefined && (
                     <button
-                      onClick={() => alert(`In the full app, this would jump to ${formatTime(msg.timestamp!)} in the video player`)}
+                      onClick={() => toast(`In the full app, this would jump to ${formatTime(msg.timestamp!)} in the video player`)}
                       className="mt-2 px-3 py-1 bg-white text-primary-700 text-sm rounded hover:bg-gray-50 transition inline-flex items-center gap-1"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,3 +1,4 @@
+import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { mockLecture } from '../data/mockData';
@@ -24,7 +25,7 @@ export default function StudentDashboard() {
           </p>
           <button 
             className="bg-white text-primary-700 px-8 py-3 rounded-lg hover:bg-primary-50 font-semibold transition shadow-lg"
-            onClick={() => alert('Upload feature: In production, this would open a file picker to upload lecture videos/audio')}
+            onClick={() => toast('Upload feature: In production, this would open a file picker to upload lecture videos/audio')}
           >
             + Upload New Lecture
           </button>

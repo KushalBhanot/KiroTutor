@@ -13,7 +13,8 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     // No backend running: auth calls fall back to demo mode, so stay quiet
-    if (!error.response && error.config?.url?.startsWith('/api/auth')) {
+    const isAuthCall = error.config?.url?.startsWith('/api/auth');
+    if (isAuthCall && (!error.response || error.response.status >= 500)) {
       return Promise.reject(error);
     }
 

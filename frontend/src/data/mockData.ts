@@ -347,6 +347,44 @@ export const mockConfusionMap: ConfusionMapData = {
   total_questions: mockQuestions.length,
 };
 
+// Live questions asked in this browser session feed the professor's Confusion Map
+const LIVE_KEY = 'kirotutor_live_questions';
+
+export function getLiveQuestions(): Question[] {
+  try {
+    return JSON.parse(localStorage.getItem(LIVE_KEY) || '[]');
+  } catch {
+    return [];
+  }
+}
+
+export function addLiveQuestion(questionText: string, answerText: string, timestampSeconds: number) {
+  const live = getLiveQuestions();
+  live.unshift({
+    id: `live-${Date.now()}`,
+    lecture_id: mockLecture.id,
+    student_id: 'student-001',
+    question_text: questionText,
+    answer_text: answerText,
+    timestamp_seconds: timestampSeconds,
+    created_at: new Date().toISOString(),
+  });
+  try {
+    localStorage.setItem(LIVE_KEY, JSON.stringify(live));
+  } catch {
+    // storage unavailable, live feed is best-effort
+  }
+}
+
+export function buildConfusionMap(): ConfusionMapData {
+  const all = [...getLiveQuestions(), ...mockQuestions];
+  return {
+    ...mockConfusionMap,
+    heatmap: generateHeatmapBuckets(all, 2700, 180),
+    total_questions: all.length,
+  };
+}
+
 function generateHeatmapBuckets(
   questions: Question[],
   duration: number,

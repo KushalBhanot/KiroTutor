@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import Navbar from '../components/Navbar';
-import { mockConfusionMap, mockLecture, mockRecapScript } from '../data/mockData';
+import { buildConfusionMap, getLiveQuestions, mockLecture, mockRecapScript } from '../data/mockData';
 
 export default function ConfusionMapPage() {
   const navigate = useNavigate();
@@ -23,7 +23,10 @@ export default function ConfusionMapPage() {
     return '#10b981'; // green-500
   };
 
-  const chartData = mockConfusionMap.heatmap.map((bucket, index) => ({
+  const confusionMap = buildConfusionMap();
+  const liveQuestions = getLiveQuestions();
+
+  const chartData = confusionMap.heatmap.map((bucket, index) => ({
     name: formatTime(bucket.start_time),
     questions: bucket.question_count,
     intensity: bucket.intensity,
@@ -61,18 +64,33 @@ export default function ConfusionMapPage() {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              {formatTime(mockConfusionMap.duration_seconds)} lecture
+              {formatTime(confusionMap.duration_seconds)} lecture
             </span>
             <span className="flex items-center gap-2">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
               </svg>
-              {mockConfusionMap.total_questions} student questions
+              {confusionMap.total_questions} student questions
             </span>
           </div>
         </div>
 
         {/* Heatmap Visualization */}
+        {liveQuestions.length > 0 && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+            <p className="font-semibold text-green-800 mb-2">
+              🟢 {liveQuestions.length} live question{liveQuestions.length > 1 ? 's' : ''} from students this session
+            </p>
+            <ul className="space-y-1">
+              {liveQuestions.slice(0, 3).map((q) => (
+                <li key={q.id} className="text-sm text-green-900">
+                  "{q.question_text}" <span className="text-green-700">at {formatTime(q.timestamp_seconds)}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <div className="bg-white rounded-lg shadow-md p-8 mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -146,14 +164,14 @@ export default function ConfusionMapPage() {
         </div>
 
         {/* Selected Bucket Details */}
-        {selectedBucket !== null && mockConfusionMap.heatmap[selectedBucket] && (
+        {selectedBucket !== null && confusionMap.heatmap[selectedBucket] && (
           <div className="bg-white rounded-lg shadow-md p-8 mb-8">
             <h3 className="text-xl font-bold text-gray-900 mb-4">
-              Questions at {formatTime(mockConfusionMap.heatmap[selectedBucket].start_time)} - {formatTime(mockConfusionMap.heatmap[selectedBucket].end_time)}
+              Questions at {formatTime(confusionMap.heatmap[selectedBucket].start_time)} - {formatTime(confusionMap.heatmap[selectedBucket].end_time)}
             </h3>
-            {mockConfusionMap.heatmap[selectedBucket].question_count > 0 ? (
+            {confusionMap.heatmap[selectedBucket].question_count > 0 ? (
               <div className="space-y-3">
-                {mockConfusionMap.heatmap[selectedBucket].sample_questions.map((q, i) => (
+                {confusionMap.heatmap[selectedBucket].sample_questions.map((q, i) => (
                   <div key={i} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
                     <svg className="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -164,9 +182,9 @@ export default function ConfusionMapPage() {
                     </div>
                   </div>
                 ))}
-                {mockConfusionMap.heatmap[selectedBucket].question_count > 3 && (
+                {confusionMap.heatmap[selectedBucket].question_count > 3 && (
                   <p className="text-sm text-gray-600 text-center">
-                    + {mockConfusionMap.heatmap[selectedBucket].question_count - 3} more questions in this time range
+                    + {confusionMap.heatmap[selectedBucket].question_count - 3} more questions in this time range
                   </p>
                 )}
               </div>

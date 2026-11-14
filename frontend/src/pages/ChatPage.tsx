@@ -2,7 +2,7 @@ import toast from 'react-hot-toast';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import { mockLecture, mockQuestions } from '../data/mockData';
+import { addLiveQuestion, mockLecture, mockQuestions } from '../data/mockData';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -81,6 +81,9 @@ export default function ChatPage() {
         response = `Based on the lecture transcript, here's what I found:\n\nThe lecture covers this topic in detail. The key point to understand is the algorithmic approach and time complexity analysis. For a comprehensive understanding, I recommend reviewing the relevant section of the lecture.\n\n📍 Related content appears around 14:35 in the lecture.`;
         timestamp = 875;
       }
+
+      addLiveQuestion(userMessage, response, timestamp);
+      toast.success(`Logged at ${formatTime(timestamp)} on the professor's Confusion Map`);
 
       setMessages(prev => [...prev, { 
         role: 'assistant', 

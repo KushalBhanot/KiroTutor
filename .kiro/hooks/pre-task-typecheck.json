@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Pre-Task Type Check",
+      "trigger": "PreTaskExec",
+      "action": {
+        "type": "command",
+        "command": "cd backend && npx tsc --noEmit 2>&1 | grep -v \"^$\" && exit 2 || exit 0",
+        "timeout": 30
+      }
+    }
+  ]
+}

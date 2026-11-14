@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Generate API Documentation",
+      "trigger": "PostFileSave",
+      "matcher": "backend/src/routes/.*\\.ts$",
+      "action": {
+        "type": "command",
+        "command": "echo \"API route updated - regenerating documentation...\" && cd backend && npm run generate:docs 2>/dev/null || echo \"Run 'npm run generate:docs' to update API documentation\""
+      }
+    }
+  ]
+}

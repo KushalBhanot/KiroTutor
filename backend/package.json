@@ -1,0 +1,51 @@
+{
+  "name": "kirotutor-backend",
+  "version": "1.0.0",
+  "description": "Backend API for KiroTutor",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "generate:docs": "ts-node scripts/generate-api-docs.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.687.0",
+    "@aws-sdk/client-transcribe": "^3.687.0",
+    "@aws-sdk/client-bedrock-runtime": "^3.687.0",
+    "@aws-sdk/s3-request-presigner": "^3.687.0",
+    "express": "^4.21.1",
+    "cors": "^2.8.5",
+    "helmet": "^8.0.0",
+    "dotenv": "^16.4.5",
+    "pg": "^8.13.1",
+    "jsonwebtoken": "^9.0.2",
+    "bcrypt": "^5.1.1",
+    "multer": "^1.4.5-lts.1",
+    "express-rate-limit": "^7.4.1",
+    "zod": "^3.23.8",
+    "uuid": "^11.0.3",
+    "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.9.0",
+    "@types/cors": "^2.8.17",
+    "@types/multer": "^1.4.12",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/bcrypt": "^5.0.2",
+    "@types/uuid": "^10.0.0",
+    "@types/pg": "^8.11.10",
+    "typescript": "^5.6.3",
+    "tsx": "^4.19.2",
+    "ts-node": "^10.9.2",
+    "vitest": "^2.1.5",
+    "@typescript-eslint/eslint-plugin": "^8.14.0",
+    "@typescript-eslint/parser": "^8.14.0",
+    "eslint": "^9.14.0"
+  }
+}

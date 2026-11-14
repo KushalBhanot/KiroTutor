@@ -16,6 +16,21 @@ interface AuthContextType {
   logout: () => void;
 }
 
+// Used when the backend isn't running, so the mock-data demo still works
+function demoUser(email: string, name?: string, role?: 'student' | 'professor'): User {
+  const resolvedRole = role ?? (email.toLowerCase().includes('prof') ? 'professor' : 'student');
+  return {
+    id: resolvedRole === 'professor' ? 'prof-001' : 'student-001',
+    email,
+    name: name ?? (resolvedRole === 'professor' ? 'Demo Professor' : 'Demo Student'),
+    role: resolvedRole,
+  };
+}
+
+function isNetworkError(error: unknown): boolean {
+  return typeof error === 'object' && error !== null && !('response' in error && (error as { response?: unknown }).response);
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -35,8 +50,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(false);
   }, []);
 
+  const persist = (user: User, token: string) => {
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(user));
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    setUser(user);
+  };
+
   const login = async (email: string, password: string) => {
-    const response = await api.post('/api/auth/login', { email, password });
+    let response;
+    try {
+      response = await api.post('/api/auth/login', { email, password }, { timeout: 3000 });
+    } catch (error) {
+      if (isNetworkError(error)) return persist(demoUser(email), 'demo-token');
+      throw error;
+    }
     const { user, token } = response.data.data;
     
     localStorage.setItem('token', token);
@@ -47,7 +75,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const register = async (email: string, password: string, name: string, role: 'student' | 'professor') => {
-    const response = await api.post('/api/auth/register', { email, password, name, role });
+    let response;
+    try {
+      response = await api.post('/api/auth/register', { email, password, name, role }, { timeout: 3000 });
+    } catch (error) {
+      if (isNetworkError(error)) return persist(demoUser(email, name, role), 'demo-token');
+      throw error;
+    }
     const { user, token } = response.data.data;
     
     localStorage.setItem('token', token);

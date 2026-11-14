@@ -12,6 +12,11 @@ export const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // No backend running: auth calls fall back to demo mode, so stay quiet
+    if (!error.response && error.config?.url?.startsWith('/api/auth')) {
+      return Promise.reject(error);
+    }
+
     if (error.response) {
       const message = error.response.data?.error?.message || 'An error occurred';
       toast.error(message);

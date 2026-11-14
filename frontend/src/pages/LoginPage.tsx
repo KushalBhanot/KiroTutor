@@ -10,12 +10,11 @@ export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const doLogin = async (loginEmail: string, loginPassword: string) => {
     setLoading(true);
     
     try {
-      await login(email, password);
+      await login(loginEmail, loginPassword);
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       toast.success('Login successful!');
       navigate(user.role === 'professor' ? '/professor' : '/student');
@@ -24,6 +23,11 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    doLogin(email, password);
   };
 
   return (
@@ -69,6 +73,25 @@ export default function LoginPage() {
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
+
+        <div className="mt-6 grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => doLogin('student@demo.com', 'password')}
+            className="py-2 px-4 rounded-lg border border-primary-600 text-primary-700 hover:bg-primary-50 disabled:opacity-50 transition"
+          >
+            Demo as Student
+          </button>
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => doLogin('prof@demo.com', 'password')}
+            className="py-2 px-4 rounded-lg border border-primary-600 text-primary-700 hover:bg-primary-50 disabled:opacity-50 transition"
+          >
+            Demo as Professor
+          </button>
+        </div>
         
         <p className="mt-6 text-center text-sm text-gray-600">
           Don't have an account?{' '}
